@@ -166,23 +166,23 @@ class ClockIn(object):
         m.update(str.encode("utf8"))
         return m.hexdigest()
 
-    def  send_sms(phone_num, content):
+    def  send_sms(self, phone_num, content):
         smsapi = "http://api.smsbao.com/"
-        # 短信平台账号
+        # 短信平台账号, 如果你需要可以在smsbao.com自己注册一个
         user = 'stdbay'
         # 短信平台密码, 这里是用的是我自己的，你也可以换成自己的
-        password = ClockIn.md5('MBm2cx9hw5F3SR')
+        password = ClockIn.md5('d7ae96be97a44fcd8f4a767fd438737b')
         
+        print('开始发送短信...')
         data = urllib.parse.urlencode({'u': user, 'p': password, 'm': phone_num, 'c': content})
         send_url = smsapi + 'sms?' + data
         response = urllib.request.urlopen(send_url)
         the_page = response.read().decode('utf-8')
-        print ('短信状态: ', statusStr[the_page])
+        print (statusStr[the_page])
 
-    def send_e_mail(mail_addr, token, content):
+    def send_e_mail(self, mail_addr, token, content):
         # 第三方 SMTP 服务
-        mail_host="smtp.qq.com"  #设置服务器
-        mail_addr="1224342775@qq.com"    #用户名
+        mail_host="smtp.qq.com"  #设置服务器，不同供应商的地址不一样
         mail_pass=token   #口令
 
         sender = mail_addr
@@ -196,6 +196,7 @@ class ClockIn(object):
         subject = '【自动打卡通知】'
         message['Subject'] = Header(subject, 'utf-8')
         try:
+            print('开始发送邮件')
             smtpObj = smtplib.SMTP() 
             smtpObj.connect(mail_host, 25)    # 25 为 SMTP 端口号
             smtpObj.login(mail_addr, mail_pass)
@@ -233,7 +234,7 @@ def main(username, password, email, token, phone):
     print("🚌 打卡任务启动")
 
     dk = ClockIn(username, password)
-
+    
     print("登录到浙大统一身份认证平台...")
     try:
         dk.login()
@@ -283,11 +284,11 @@ def main(username, password, email, token, phone):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='获取配置参数')
-    parser.add_argument("--account", default=None, help='ZJU学号')
-    parser.add_argument("--password", default=None, help='ZJU密码')
-    parser.add_argument("--email", default=None, help='邮件地址')
-    parser.add_argument("--token", default=None, help='邮件口令')
-    parser.add_argument("--phone", default=None, help='电话号码')
+    parser.add_argument("--account", default=' 22221057', help='ZJU学号')
+    parser.add_argument("--password", default=' hzwhw2000414', help='ZJU密码')
+    parser.add_argument("--email", default=' 1224342775@qq.com', help='邮件地址')
+    parser.add_argument("--token", default=' swignrphbewogiba', help='邮件口令')
+    parser.add_argument("--phone", default=' 15156053994', help='电话号码')
     args = parser.parse_args()
     
     try:
