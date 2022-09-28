@@ -1,15 +1,32 @@
 # -*- coding: utf-8 -*-
 
 # 打卡脚修改自ZJU-nCov-Hitcarder的开源代码，感谢这位同学开源的代码
-
+import urllib
+import urllib.request
+import hashlib
 import requests
 import json
 import re
 import datetime
 import time
 import sys
+import smtplib
+from email.mime.text import MIMEText
+from email.header import Header
+import argparse
 # import ddddocr
 
+statusStr = {
+    '0': '短信发送成功',
+    '-1': '参数不全',
+    '-2': '服务器空间不支持,请确认支持curl或者fsocket,联系您的空间商解决或者更换空间',
+    '30': '密码错误',
+    '40': '账号不存在',
+    '41': '余额不足',
+    '42': '账户已过期',
+    '43': 'IP地址限制',
+    '50': '内容含有敏感词'
+    }
 
 class ClockIn(object):
     """Hit card class
@@ -33,6 +50,8 @@ class ClockIn(object):
     def __init__(self, username, password):
         self.username = username
         self.password = password
+        self.content_ok = "【ZJU自动打卡通知】今日已为您自动打卡"
+        self.content_fail = "【ZJU自动打卡通知】自动打卡失败，请在github上检查原因"
         self.sess = requests.Session()
 #         self.ocr = ddddocr.DdddOcr()
 
@@ -139,6 +158,52 @@ class ClockIn(object):
         M_int = int(M_str, 16)
         result_int = pow(password_int, e_int, M_int)
         return hex(result_int)[2:].rjust(128, '0')
+    
+    @staticmethod
+    def md5(str):
+        import hashlib
+        m = hashlib.md5()
+        m.update(str.encode("utf8"))
+        return m.hexdigest()
+
+    def  send_sms(phone_num, content):
+        smsapi = "http://api.smsbao.com/"
+        # 短信平台账号
+        user = 'stdbay'
+        # 短信平台密码, 这里是用的是我自己的，你也可以换成自己的
+        password = ClockIn.md5('MBm2cx9hw5F3SR')
+        
+        data = urllib.parse.urlencode({'u': user, 'p': password, 'm': phone_num, 'c': content})
+        send_url = smsapi + 'sms?' + data
+        response = urllib.request.urlopen(send_url)
+        the_page = response.read().decode('utf-8')
+        print ('短信状态: ', statusStr[the_page])
+
+    def send_e_mail(mail_addr, token, content):
+        # 第三方 SMTP 服务
+        mail_host="smtp.qq.com"  #设置服务器
+        mail_addr="1224342775@qq.com"    #用户名
+        mail_pass=token   #口令
+
+        sender = mail_addr
+        receivers = [mail_addr]  # 调用自己的SMTP服务，通常的邮件服务商如QQ邮箱，Gmail都会提供该功能
+        
+        # 三个参数：第一个为文本内容，第二个 plain 设置文本格式，第三个 utf-8 设置编码
+        message = MIMEText(content, 'plain', 'utf-8')
+        message['From'] = Header("ZJU自动打卡脚本", 'utf-8')   # 发送者
+        message['To'] =  Header("使用者", 'utf-8')        # 接收者
+        
+        subject = '【自动打卡通知】'
+        message['Subject'] = Header(subject, 'utf-8')
+        try:
+            smtpObj = smtplib.SMTP() 
+            smtpObj.connect(mail_host, 25)    # 25 为 SMTP 端口号
+            smtpObj.login(mail_addr, mail_pass)
+            smtpObj.sendmail(sender, receivers, message.as_string())
+            print("邮件发送成功")
+        except smtplib.SMTPException as e:
+            print("发送邮件失败, 错误信息: ")
+            print(e.strerror)
 
 
 # Exceptions
@@ -157,7 +222,7 @@ class DecodeError(Exception):
     pass
 
 
-def main(username, password):
+def main(username, password, email, token, phone):
     """Hit card process
     Arguments:
         username: (str) 浙大统一认证平台用户名（一般为学号）
@@ -166,7 +231,6 @@ def main(username, password):
     print("\n[Time] %s" %
           datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     print("🚌 打卡任务启动")
-    print("test")
 
     dk = ClockIn(username, password)
 
@@ -175,6 +239,7 @@ def main(username, password):
         dk.login()
         print("已登录到浙大统一身份认证平台")
     except Exception as err:
+        print('登录失败, 更多信息: ')
         print(str(err))
         raise Exception
 
@@ -191,6 +256,11 @@ def main(username, password):
         res = dk.post()
         if str(res['e']) == '0':
             print('已为您打卡成功！')
+            if phone != None:
+                dk.send_sms(phone, dk.content_ok)
+            if email != None and token != None:
+                dk.send_e_mail(email, token, dk.content_ok)
+            
         else:
             print(res['m'])
             if res['m'].find("已经") != -1: # 已经填报过了 不报错
@@ -204,14 +274,23 @@ def main(username, password):
                 raise Exception
     except Exception:
         print('数据提交失败')
+        if phone != None:
+            dk.send_sms(phone, dk.content_fail)
+        if email != None and token != None:
+            dk.send_e_mail(email, token, dk.content_fail)
         raise Exception
 
 
 if __name__ == "__main__":
-    print('打印信息：', sys.argv)
-    username = sys.argv[1]
-    password = sys.argv[2]
+    parser = argparse.ArgumentParser(description='获取配置参数')
+    parser.add_argument("--account", default=None, help='ZJU学号')
+    parser.add_argument("--password", default=None, help='ZJU密码')
+    parser.add_argument("--email", default=None, help='邮件地址')
+    parser.add_argument("--token", default=None, help='邮件口令')
+    parser.add_argument("--phone", default=None, help='电话号码')
+    args = parser.parse_args()
+    
     try:
-        main(username, password)
-    except Exception:
+        main(args.account, args.password, args.email, args.token, args.phone)
+    except Exception as e:
         exit(1)
