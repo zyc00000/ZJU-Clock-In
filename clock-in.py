@@ -166,6 +166,7 @@ def main(username, password):
     print("\n[Time] %s" %
           datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     print("🚌 打卡任务启动")
+    print("test")
 
     dk = ClockIn(username, password)
 
