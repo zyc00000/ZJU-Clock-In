@@ -7,9 +7,9 @@
 现在可以把打卡结果以邮件形式发送给你，防止突然失效
 以QQ邮箱为例：
 1. 设置-账户，点击获取并记录你的口令
-![](images/email.jpg)
+![](images/email.png)
 3. 打开本仓库的Settings-Secrets-Actions，添加名为E_MAIL和TOKEN的项，值分别填上你的邮箱地址和第一步获得的口令
-![](images/secrets.jpg)
+![](images/secrets.png)
 
 
 ### Jul 8th
