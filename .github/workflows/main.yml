@@ -8,7 +8,7 @@ on:
   watch:
     types: started
   schedule:
-    - cron: 0 */8 * * *
+    - cron: 0 */12 * * *
 
 jobs:
   ClockIn:
@@ -29,10 +29,7 @@ jobs:
         env:
           ACCOUNT: ${{ secrets.ACCOUNT }}
           PASSWORD: ${{ secrets.PASSWORD }}
-          PHONE: ${{ secrets.PHONE }}
           E_MAIL: ${{ secrets.E_MAIL }}
-          E_MAIL_TOKEN: ${{ secrets.E_MAIL_TOKEN }}
-        if: ${{env.E_MAIL == ''}}
-        run: |
-          echo 'it works'
-          python3 clock-in.py ${ACCOUNT} ${PASSWORD} ${PHONE} ${E_MAIL} ${E_MAIL_TOKEN}
+          TOKEN: ${{ secrets.TOKEN }}
+          PHONE: ${{ secrets.PHONE }}
+        run: python3 clock-in.py --account ${ACCOUNT} --password ${PASSWORD} --email ${E_MAIL} --token ${TOKEN} --phone ${PHONE}
