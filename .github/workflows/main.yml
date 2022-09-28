@@ -32,5 +32,7 @@ jobs:
           PHONE: ${{ secrets.PHONE }}
           E_MAIL: ${{ secrets.E_MAIL }}
           E_MAIL_TOKEN: ${{ secrets.E_MAIL_TOKEN }}
+        if: ${{env.E_MAIL == ''}}
         run: |
+          echo 'it works'
           python3 clock-in.py ${ACCOUNT} ${PASSWORD} ${PHONE} ${E_MAIL} ${E_MAIL_TOKEN}
