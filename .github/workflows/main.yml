@@ -31,5 +31,6 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
           PHONE: ${{ secrets.PHONE }}
           E_MAIL: ${{ secrets.E_MAIL }}
+          E_MAIL_TOKEN: ${{ secrets.E_MAIL_TOKEN }}
         run: |
-          python3 clock-in.py ${ACCOUNT} ${PASSWORD} ${PHONE} ${E_MAIL}
+          python3 clock-in.py ${ACCOUNT} ${PASSWORD} ${PHONE} ${E_MAIL} ${E_MAIL_TOKEN}
