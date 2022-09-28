@@ -33,4 +33,4 @@ jobs:
           TOKEN: ${{ secrets.TOKEN }}
           PHONE: ${{ secrets.PHONE }}
 #           所有参数前面都用一个空格占位，防止传入空参数
-        run: python3 clock-in.py --account ' ${{ACCOUNT}}' --password ' ${{PASSWORD}}' --email ' ${{E_MAIL}}' --token ' ${{TOKEN}}' --phone ' ${{PHONE}}'
+        run: python3 clock-in.py --account ' ${{ env.ACCOUNT }}' --password ' ${{ env.PASSWORD }}' --email ' ${{ env.E_MAIL }}' --token ' ${{ env.TOKEN }}' --phone ' ${{ env.PHONE }}'
