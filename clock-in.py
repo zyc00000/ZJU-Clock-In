@@ -159,26 +159,26 @@ class ClockIn(object):
         result_int = pow(password_int, e_int, M_int)
         return hex(result_int)[2:].rjust(128, '0')
     
-    @staticmethod
-    def md5(str):
-        import hashlib
-        m = hashlib.md5()
-        m.update(str.encode("utf8"))
-        return m.hexdigest()
+#     @staticmethod
+#     def md5(str):
+#         import hashlib
+#         m = hashlib.md5()
+#         m.update(str.encode("utf8"))
+#         return m.hexdigest()
 
-    def  send_sms(self, phone_num, content):
-        smsapi = "http://api.smsbao.com/"
-        # 短信平台账号, 如果你需要可以在smsbao.com自己注册一个
-        user = 'stdbay'
-        # 短信平台密码, 这里是用的是我自己的，你也可以换成自己的
-        password = ClockIn.md5('d7ae96be97a44fcd8f4a767fd438737b')
+#     def  send_sms(self, phone_num, content):
+#         smsapi = "http://api.smsbao.com/"
+#         # 短信平台账号, 如果你需要可以在smsbao.com自己注册一个
+#         user = 'stdbay'
+#         # 短信平台密码, 这里是用的是我自己的，你也可以换成自己的
+#         password = ClockIn.md5('d7ae96be97a44fcd8f4a767fd438737b')
         
-        print('开始发送短信...')
-        data = urllib.parse.urlencode({'u': user, 'p': password, 'm': phone_num, 'c': content})
-        send_url = smsapi + 'sms?' + data
-        response = urllib.request.urlopen(send_url)
-        the_page = response.read().decode('utf-8')
-        print (statusStr[the_page])
+#         print('开始发送短信...')
+#         data = urllib.parse.urlencode({'u': user, 'p': password, 'm': phone_num, 'c': content})
+#         send_url = smsapi + 'sms?' + data
+#         response = urllib.request.urlopen(send_url)
+#         the_page = response.read().decode('utf-8')
+#         print (statusStr[the_page])
 
     def send_e_mail(self, mail_addr, token, content):
         # 第三方 SMTP 服务
@@ -258,8 +258,8 @@ def main(username, password, email, token, phone):
         res = dk.post()
         if str(res['e']) == '0':
             print('已为您打卡成功！')
-            if len(phone) > 0:
-                dk.send_sms(phone, dk.content_ok)
+#             if len(phone) > 0:
+#                 dk.send_sms(phone, dk.content_ok)
             if len(email) == 0 and len(token) == 0:
                 dk.send_e_mail(email, token, dk.content_ok)
             
@@ -276,8 +276,8 @@ def main(username, password, email, token, phone):
                 raise Exception
     except Exception:
         print('数据提交失败')
-        if len(phone) > 0:
-            dk.send_sms(phone, dk.content_fail)
+#         if len(phone) > 0:
+#             dk.send_sms(phone, dk.content_fail)
         if len(email) == 0 and len(token) == 0:
             dk.send_e_mail(email, token, dk.content_fail)
         raise Exception
