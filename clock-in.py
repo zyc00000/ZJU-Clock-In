@@ -256,9 +256,9 @@ def main(username, password, email, token, phone):
         res = dk.post()
         if str(res['e']) == '0':
             print('已为您打卡成功！')
-            if phone != None:
+            if len(phone) > 0:
                 dk.send_sms(phone, dk.content_ok)
-            if email != None and token != None:
+            if len(email) == 0 and len(token) == 0:
                 dk.send_e_mail(email, token, dk.content_ok)
             
         else:
@@ -274,9 +274,9 @@ def main(username, password, email, token, phone):
                 raise Exception
     except Exception:
         print('数据提交失败')
-        if phone != None:
+        if len(phone) > 0:
             dk.send_sms(phone, dk.content_fail)
-        if email != None and token != None:
+        if len(email) == 0 and len(token) == 0:
             dk.send_e_mail(email, token, dk.content_fail)
         raise Exception
 
@@ -291,6 +291,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     try:
-        main(args.account, args.password, args.email, args.token, args.phone)
+        # 此处去掉开头的占位符
+        main(args.account[1:], args.password[1:], args.email[1:], args.token[1:], args.phone[1:])
     except Exception as e:
         exit(1)
