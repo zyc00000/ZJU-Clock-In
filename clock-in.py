@@ -229,10 +229,11 @@ def main(username, password, email, token, phone):
         username: (str) 浙大统一认证平台用户名（一般为学号）
         password: (str) 浙大统一认证平台密码
     """
+    print(username, password, email, token, phone)
     print("\n[Time] %s" %
           datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     print("🚌 打卡任务启动")
-
+    
     dk = ClockIn(username, password)
     
     print("登录到浙大统一身份认证平台...")
