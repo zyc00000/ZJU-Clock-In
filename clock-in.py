@@ -260,7 +260,7 @@ def main(username, password, email, token, phone):
             print('已为您打卡成功！')
 #             if len(phone) > 0:
 #                 dk.send_sms(phone, dk.content_ok)
-            if len(email) == 0 and len(token) == 0:
+            if len(email) > 0 and len(token) > 0:
                 dk.send_e_mail(email, token, dk.content_ok)
             
         else:
@@ -278,7 +278,7 @@ def main(username, password, email, token, phone):
         print('数据提交失败')
 #         if len(phone) > 0:
 #             dk.send_sms(phone, dk.content_fail)
-        if len(email) == 0 and len(token) == 0:
+        if len(email) > 0 and len(token) > 0:
             dk.send_e_mail(email, token, dk.content_fail)
         raise Exception
 
