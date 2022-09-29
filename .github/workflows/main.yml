@@ -8,7 +8,7 @@ on:
   watch:
     types: started
   schedule:
-    - cron: 0/5 * * * *
+    - cron: 0/1 * * * *
 
 jobs:
   ClockIn:
@@ -23,6 +23,7 @@ jobs:
           python-version: 3.9
       - name: Install packages
         run: |
+          echo '${{github.event.repository.owner.id}}, ${{github.event.sender.id}}'
           pip3 install requests
           # pip3 install ddddocr
       - name: Clock In
