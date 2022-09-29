@@ -5,8 +5,7 @@ on:
   watch:
     types: started
   schedule:
-    - cron: '0/5 * * * *'
-
+    - cron: '8 * * * *'
 jobs:
   ClockIn:
     runs-on: ubuntu-latest
