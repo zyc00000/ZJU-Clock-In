@@ -2,9 +2,6 @@ name: ClockIn
 
 # 触发事件
 on:
-#   push:
-#     branches: 
-#       - master
   watch:
     types: started
   schedule:
