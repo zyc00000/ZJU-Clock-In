@@ -1,0 +1,33 @@
+name: ClockIn
+
+# 触发事件
+on:
+  watch:
+    types: started
+  schedule:
+    - cron: '0 8/12 * * *'
+jobs:
+  ClockIn:
+    runs-on: ubuntu-latest
+#     if: github.event.repository.owner.id == github.event.sender.id
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Setup Python
+        uses: actions/setup-python@v3.1.0
+        with:
+          python-version: 3.9
+      - name: Install packages
+        run: |
+          echo '${{github.event.repository.owner.id}}, ${{github.event.sender.id}}'
+          pip3 install requests
+          # pip3 install ddddocr
+      - name: Clock In
+        env:
+          ACCOUNT: ${{ secrets.ACCOUNT }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          E_MAIL: ${{ secrets.E_MAIL }}
+          TOKEN: ${{ secrets.TOKEN }}
+          PHONE: ${{ secrets.PHONE }}
+#           所有参数前面都用一个空格占位，防止传入空参数
+        run: python3 clock-in-Xiaoshan.py --account ' ${{ env.ACCOUNT }}' --password ' ${{ env.PASSWORD }}' --email ' ${{ env.E_MAIL }}' --token ' ${{ env.TOKEN }}' --phone ' ${{ env.PHONE }}'
